@@ -1,0 +1,17 @@
+{
+  "seed": 42,
+  "feature_order": [
+    "AccX",
+    "AccY",
+    "AccZ",
+    "GyrX",
+    "GyrY",
+    "GyrZ"
+  ],
+  "original_fs": 100,
+  "target_fs": 50,
+  "window": 100,
+  "step": 50,
+  "threshold": 0.49999999999999994,
+  "label_policy": "Normal trials=0; fall trials: retain windows overlapping onset..impact, label 1"
+}
