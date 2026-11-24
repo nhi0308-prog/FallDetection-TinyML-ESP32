@@ -1,5 +1,7 @@
 #  Fall Detection TinyML ESP32
 
+> The repository includes a Firebase dashboard in [`frontend/`](frontend/README.md). It reads KFall wearable data through Wi-Fi and Firebase Realtime Database; it does not require a USB/Web Serial connection.
+
 ## 1. Mục tiêu
 
 Thiết lập Python 3.12 x64, kiểm tra TensorFlow trên CPU và rà soát hai ZIP KFall. Hai script chạy độc lập. Script KFall không cần import TensorFlow.
@@ -16,6 +18,8 @@ Repo gốc ở commit `8a96bc6` đã có hai notebook và bản xuất INT8 nh�
 | `data/raw/kfall/` | Nơi đặt hai ZIP gốc do bạn đã tải |
 | `.gitignore` | Loại môi trường ảo, dữ liệu cục bộ và kết quả chạy khỏi Git |
 | `results/phase1/` | Các báo cáo được ghi khi chạy script |
+| `frontend/` | Dashboard theo dõi ESP32-S3 qua Firebase Realtime Database |
+| `firebase-rules.json` | Rules mẫu cho đường dẫn dữ liệu Firebase của dashboard |
 
 ## 3. Mở và chạy trong VS Code trên Windows
 
