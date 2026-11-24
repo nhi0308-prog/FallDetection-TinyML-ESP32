@@ -1,0 +1,17 @@
+source_hz: 100
+target_hz: 100
+window_samples: 200
+stride_samples: 20
+channels:
+- AccX
+- AccY
+- AccZ
+- GyrX
+- GyrY
+- GyrZ
+subject_split: configs/subject_split.json
+label_mapping: configs/label_mapping.yaml
+fall_min_seconds_after_onset: 0.2
+fall_max_seconds_after_impact: 0.3
+resampling:
+  method: none

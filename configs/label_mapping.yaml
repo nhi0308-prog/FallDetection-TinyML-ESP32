@@ -1,0 +1,5 @@
+﻿Idle: [T01, T11, T12, T17]
+Walking: [T06, T07, T35, T36]
+Active: [T04, T08, T09]
+Fall: [T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34]
+Ambiguous: [T02, T03, T05, T10, T13, T14, T15, T16, T18, T19]
