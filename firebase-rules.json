@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "devices": {
+      "$deviceId": {
+        "latest": {
+          ".read": true,
+          ".write": "auth != null"
+        },
+        "events": {
+          ".read": true,
+          ".write": "auth != null"
+        }
+      }
+    }
+  }
+}
