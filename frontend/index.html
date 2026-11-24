@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KFall | Bảng theo dõi thiết bị</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-conn="idle">
+  <div class="app-shell">
+    <!-- Sidebar điều hướng 4 trang riêng biệt -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 12h4l2.5-6 4 12 2.5-6H21"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">K<em>Fall</em></div>
+          <div class="brand-sub">THIẾT BỊ ĐEO BỤNG</div>
+        </div>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">TRANG CHÍNH</div>
+        <nav class="sidebar-nav" aria-label="Chuyển trang chức năng">
+          <button type="button" class="nav-item active" data-view="overview">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+            <span>Tổng quan</span>
+          </button>
+          <button type="button" class="nav-item" data-view="ai">
+            <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>
+            <span>Phân tích AI</span>
+          </button>
+          <button type="button" class="nav-item" data-view="imu">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            <span>Cảm biến IMU</span>
+          </button>
+          <button type="button" class="nav-item" data-view="logs">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+            <span>Nhật ký cảnh báo</span>
+            <span class="nav-badge" id="navLogCount">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">CẤU HÌNH PHẦN CỨNG</div>
+        <div class="spec-list">
+          <div class="spec-row"><span>Vi điều khiển</span><strong>ESP32-S3</strong></div>
+          <div class="spec-row"><span>Kết nối</span><strong>Wi-Fi · Firebase</strong></div>
+          <div class="spec-row"><span>Ngưỡng AI</span><strong>q ≥ 123 (2x)</strong></div>
+          <div class="spec-row"><span>Cảm biến</span><strong>6-Axis IMU</strong></div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="team-badge">NHÓM 2 · LỚP 22PFIEV2</div>
+        <div class="team-names">
+          Lý Thuỳ Trâm<br>
+          Phạm Thị Ánh Nhi<br>
+          Nguyễn Thị Tường Vi
+        </div>
+      </div>
+    </aside>
+
+    <!-- Vùng làm việc chính -->
+    <div class="workspace">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle">Tổng quan hệ thống</h1>
+          <p class="topbar-sub" id="pageSub">Chuyển động, cảnh báo và tình trạng thiết bị trong một màn hình</p>
+        </div>
+
+        <div class="topbar-right">
+          <div class="date-pill">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <time id="date"></time>
+          </div>
+
+          <div class="conn-control">
+            <span id="connection" class="conn-status">Chưa kết nối Firebase</span>
+            <button id="connect" class="btn-primary" type="button">Kết nối Firebase</button>
+          </div>
+        </div>
+      </header>
+
+      <span id="message" class="sr-only" aria-live="polite"></span>
+
+      <main class="content">
+        <!-- ================= VIEW 1: TỔNG QUAN ================= -->
+        <section class="view-page active" id="view-overview">
+          <div class="kpi-row">
+            <article id="statusCard" class="card status-card">
+              <div class="card-head">
+                <span class="card-title">Trạng thái chuyển động</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+              </div>
+              <strong id="status" class="kpi-value" aria-live="polite">Chờ thiết bị</strong>
+              <div class="kpi-foot" id="updated">Chưa nhận kết quả AI</div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Điểm suy luận AI</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>
+                </span>
+              </div>
+              <div class="kpi-inline">
+                <strong id="score" class="kpi-value">—</strong>
+                <span class="tag-pill">INT8 [-128..127]</span>
+              </div>
+              <div class="kpi-foot">Ngưỡng cảnh báo: <b>q ≥ 123</b></div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Cửa sổ xác nhận &amp; Còi</span>
+                <span class="icon-box rose">
+                  <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                </span>
+              </div>
+              <strong id="high" class="kpi-value">—</strong>
+              <div class="kpi-foot" id="siren">Còi · Chưa có dữ liệu</div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Pin thiết bị (GPIO8)</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+                </span>
+              </div>
+              <strong id="battery" class="kpi-value">—</strong>
+              <div class="bat-track" aria-hidden="true"><div class="bat-fill" id="batFill"></div></div>
+              <div class="kpi-foot" id="batteryInfo">Chờ dữ liệu GPIO8</div>
+            </article>
+          </div>
+
+          <div class="mid-row">
+            <article class="card">
+              <div class="panel-header">
+                <div>
+                  <h2>Kết quả AI (Biểu đồ xu hướng)</h2>
+                  <p class="panel-sub">Ngưỡng q ≥ 123 · Hai cửa sổ liên tiếp để báo ngã</p>
+                </div>
+                <div class="chart-legend">
+                  <span class="leg-item"><i class="leg-line"></i>Điểm INT8</span>
+                  <span class="leg-item"><i class="leg-dash"></i>Ngưỡng 123</span>
+                </div>
+              </div>
+              <div class="chart-box">
+                <canvas id="chart" aria-label="Biểu đồ điểm AI theo cửa sổ"></canvas>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="panel-header">
+                <div>
+                  <h2>Tổng hợp cường độ IMU</h2>
+                  <p class="panel-sub">Biên độ tổng hợp tức thời từ 3 trục X, Y, Z</p>
+                </div>
+              </div>
+              <div class="mag-list">
+                <div class="mag-item">
+                  <div class="mag-top">
+                    <span>Tổng gia tốc (|A|)</span>
+                    <strong id="accMag">— g</strong>
+                  </div>
+                  <div class="mag-bar"><div class="mag-fill navy" id="accBar"></div></div>
+                  <span class="mag-hint">Trạng thái đứng yên chuẩn ≈ 1.00 g</span>
+                </div>
+                <div class="mag-item">
+                  <div class="mag-top">
+                    <span>Tổng vận tốc góc (|G|)</span>
+                    <strong id="gyroMag">— °/s</strong>
+                  </div>
+                  <div class="mag-bar"><div class="mag-fill rose" id="gyroBar"></div></div>
+                  <span class="mag-hint">Tốc độ xoay thân người khi mất thăng bằng</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="bottom-row">
+            <article class="card">
+              <div class="panel-header">
+                <div>
+                  <h2>Dữ liệu cảm biến</h2>
+                  <p class="panel-sub">Giá trị thời gian thực từ cảm biến đeo bụng</p>
+                </div>
+                <span class="status-tag" id="sensorBadge">Chờ tín hiệu</span>
+              </div>
+              <table>
+                <thead>
+                  <tr><th>Đại lượng</th><th>X</th><th>Y</th><th>Z</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Gia tốc (g)</td>
+                    <td id="ax">—</td><td id="ay">—</td><td id="az">—</td>
+                  </tr>
+                  <tr>
+                    <td>Vận tốc góc (°/s)</td>
+                    <td id="gx">—</td><td id="gy">—</td><td id="gz">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </article>
+
+            <article class="card">
+              <div class="panel-header">
+                <div>
+                  <h2>Nhật ký cảnh báo</h2>
+                  <p class="panel-sub">Các sự kiện mới nhất được đồng bộ từ Firebase</p>
+                </div>
+                <button type="button" class="link-btn" data-jump="logs">Xem tất cả →</button>
+              </div>
+              <div class="log-box">
+                <ul id="events">
+                  <li class="empty-log">Chưa có cảnh báo trong phiên</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 2: PHÂN TÍCH AI ================= -->
+        <section class="view-page" id="view-ai">
+          <div class="kpi-row">
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Điểm AI hiện tại (q)</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>
+                </span>
+              </div>
+              <strong id="aiCurScore" class="kpi-value">—</strong>
+              <div class="kpi-foot">Dải lượng tử INT8: -128 đến +127</div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Điểm cao nhất phiên</span>
+                <span class="icon-box rose">
+                  <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                </span>
+              </div>
+              <strong id="aiMaxScore" class="kpi-value">—</strong>
+              <div class="kpi-foot">Đỉnh điểm ghi nhận từ lúc kết nối</div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Điểm trung bình 100 mẫu</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><path d="M4 12h16"/></svg>
+                </span>
+              </div>
+              <strong id="aiAvgScore" class="kpi-value">—</strong>
+              <div class="kpi-foot">Độ ổn định suy luận nền</div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Số cửa sổ vượt ngưỡng</span>
+                <span class="icon-box rose">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                </span>
+              </div>
+              <strong id="aiOverCount" class="kpi-value">0</strong>
+              <div class="kpi-foot">Số lần đạt q ≥ 123</div>
+            </article>
+          </div>
+
+          <article class="card">
+            <div class="panel-header">
+              <div>
+                <h2>Biểu đồ chi tiết suy luận mô hình AI (100 cửa sổ)</h2>
+                <p class="panel-sub">Phóng to theo dõi biến thiên điểm số q và vùng ngưỡng kích hoạt cảnh báo ngã</p>
+              </div>
+              <div class="chart-legend">
+                <span class="leg-item"><i class="leg-line"></i>Điểm suy luận q</span>
+                <span class="leg-item"><i class="leg-dash"></i>Ngưỡng báo ngã (123)</span>
+              </div>
+            </div>
+            <div class="chart-box large">
+              <canvas id="chartDetail" aria-label="Biểu đồ chi tiết điểm AI"></canvas>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="panel-header">
+              <div>
+                <h2>Cơ chế quyết định cảnh báo của KFall AI</h2>
+                <p class="panel-sub">Quy trình lọc nhiễu hai bước trên vi điều khiển ESP32-S3</p>
+              </div>
+            </div>
+            <div class="rule-grid">
+              <div class="rule-card">
+                <span class="rule-step">BƯỚC 1</span>
+                <h3>Suy luận lượng tử INT8</h3>
+                <p>Mỗi cửa sổ dữ liệu IMU được đưa qua mô hình mạng nơ-ron INT8 để xuất ra điểm số <b>q ∈ [-128, 127]</b>.</p>
+              </div>
+              <div class="rule-card">
+                <span class="rule-step">BƯỚC 2</span>
+                <h3>Kiểm tra ngưỡng q ≥ 123</h3>
+                <p>Khi điểm số vượt ngưỡng <b>123</b>, bộ đếm xác nhận tăng lên <b>1/2</b> để loại bỏ các va chạm thoáng qua.</p>
+              </div>
+              <div class="rule-card">
+                <span class="rule-step">BƯỚC 3</span>
+                <h3>Xác nhận 2 cửa sổ liên tiếp</h3>
+                <p>Nếu cửa sổ kế tiếp tiếp tục đạt <b>q ≥ 123</b> (trạng thái <b>2/2</b>), hệ thống phát báo động ngã và bật còi.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ================= VIEW 3: CẢM BIẾN IMU ================= -->
+        <section class="view-page" id="view-imu">
+          <div class="imu-grid">
+            <article class="card">
+              <div class="panel-header">
+                <div>
+                  <h2>Gia tốc kế 3 trục (Accelerometer)</h2>
+                  <p class="panel-sub">Đơn vị đo: g (1g ≈ 9.81 m/s²)</p>
+                </div>
+                <span class="tag-pill" id="imuAccTotal">|A| = — g</span>
+              </div>
+              <div class="axis-list">
+                <div class="axis-row">
+                  <div class="axis-label"><span>Trục X (Ngang)</span><strong id="imu_ax">— g</strong></div>
+                  <div class="axis-track"><div class="axis-bar" id="bar_ax"></div></div>
+                </div>
+                <div class="axis-row">
+                  <div class="axis-label"><span>Trục Y (Dọc)</span><strong id="imu_ay">— g</strong></div>
+                  <div class="axis-track"><div class="axis-bar" id="bar_ay"></div></div>
+                </div>
+                <div class="axis-row">
+                  <div class="axis-label"><span>Trục Z (Trước/Sau)</span><strong id="imu_az">— g</strong></div>
+                  <div class="axis-track"><div class="axis-bar" id="bar_az"></div></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="panel-header">
+                <div>
+                  <h2>Con quay hồi chuyển 3 trục (Gyroscope)</h2>
+                  <p class="panel-sub">Đơn vị đo: độ/giây (°/s)</p>
+                </div>
+                <span class="tag-pill" id="imuGyroTotal">|G| = — °/s</span>
+              </div>
+              <div class="axis-list">
+                <div class="axis-row">
+                  <div class="axis-label"><span>Trục X (Roll)</span><strong id="imu_gx">— °/s</strong></div>
+                  <div class="axis-track"><div class="axis-bar rose" id="bar_gx"></div></div>
+                </div>
+                <div class="axis-row">
+                  <div class="axis-label"><span>Trục Y (Pitch)</span><strong id="imu_gy">— °/s</strong></div>
+                  <div class="axis-track"><div class="axis-bar rose" id="bar_gy"></div></div>
+                </div>
+                <div class="axis-row">
+                  <div class="axis-label"><span>Trục Z (Yaw)</span><strong id="imu_gz">— °/s</strong></div>
+                  <div class="axis-track"><div class="axis-bar rose" id="bar_gz"></div></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <article class="card">
+            <div class="panel-header">
+              <div>
+                <h2>Dữ liệu IMU từ Firebase</h2>
+                <p class="panel-sub">Dữ liệu do ESP32-S3 gửi qua Wi-Fi, cập nhật theo thời gian thực</p>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Kênh cảm biến</th>
+                  <th>Giá trị Raw (ADC)</th>
+                  <th>Giá trị quy đổi</th>
+                  <th>Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Accel X / Y / Z</td><td id="rawAcc">—</td><td id="scaledAcc">—</td><td>Hoạt động</td></tr>
+                <tr><td>Gyro X / Y / Z</td><td id="rawGyro">—</td><td id="scaledGyro">—</td><td>Hoạt động</td></tr>
+              </tbody>
+            </table>
+          </article>
+        </section>
+
+        <!-- ================= VIEW 4: NHẬT KÝ CẢNH BÁO ================= -->
+        <section class="view-page" id="view-logs">
+          <div class="kpi-row three">
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Sự kiện đang hiển thị</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                </span>
+              </div>
+              <strong id="logTotalCount" class="kpi-value">0</strong>
+              <div class="kpi-foot">Tối đa 30 sự kiện Firebase gần nhất</div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Số lần phát hiện ngã</span>
+                <span class="icon-box rose">
+                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                </span>
+              </div>
+              <strong id="logFallCount" class="kpi-value">0</strong>
+              <div class="kpi-foot">Cảnh báo mức độ cao</div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <span class="card-title">Số lần tắt còi (VOL−)</span>
+                <span class="icon-box">
+                  <svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M23 9l-6 6M17 9l6 6"/></svg>
+                </span>
+              </div>
+              <strong id="logMuteCount" class="kpi-value">0</strong>
+              <div class="kpi-foot">Thao tác xác nhận từ người dùng</div>
+            </article>
+          </div>
+
+          <article class="card">
+            <div class="panel-header">
+              <div>
+                <h2>Lịch sử sự kiện chi tiết</h2>
+                <p class="panel-sub">Lịch sử cảnh báo lấy từ Firebase Realtime Database</p>
+              </div>
+              <div class="log-actions">
+                <button type="button" class="btn-outline" id="exportLogBtn">Xuất file CSV</button>
+                <button type="button" class="btn-outline" id="clearLogBtn">Xóa khỏi màn hình</button>
+              </div>
+            </div>
+
+            <div class="log-box full">
+              <ul id="eventsFull">
+                <li class="empty-log">Chưa có cảnh báo trong phiên</li>
+              </ul>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
