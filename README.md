@@ -1,4 +1,4 @@
-# Phase 1 — Fall Detection TinyML ESP32
+#  Fall Detection TinyML ESP32
 
 ## 1. Mục tiêu
 
@@ -67,7 +67,7 @@ TensorFlow in `PASS`. Audit đọc được 5.075 CSV, 32 workbook, liên kết 
 
 Tài liệu tham khảo gồm [Trang chính thức KFall](https://sites.google.com/view/kfalldataset/home), [Yu, Jang và Xiong (2021)](https://doi.org/10.3389/fnagi.2021.692865), [repository](https://github.com/nhi0308-prog/FallDetection-TinyML-ESP32).
 
-## 7. Kết quả chạy với hai ZIP bạn gửi
+## 7. Kết quả chạy với hai ZIP 
 
 ## Experiment results
 
