@@ -69,6 +69,14 @@ Tài liệu tham khảo gồm [Trang chính thức KFall](https://sites.google.c
 
 ## 7. Kết quả chạy với hai ZIP bạn gửi
 
+## Experiment results
+
+Large experiment outputs and model checkpoints are not stored in this repository.
+
+Verified summary metrics are available in `kfall-summary-verified.json`.
+
+Run the training and evaluation scripts to reproduce the results.
+
 - Python 3.12.14 và TensorFlow 2.20.0 trên Linux x64 chạy Conv1D trên CPU thành công. Các gói trực tiếp trong requirements có wheel cho Windows x64 và Python 3.12. Việc chạy thực tế trên máy Windows của bạn được kiểm tra bằng lệnh ở mục 3.
 - Audit đọc đủ 5.075/5.075 CSV từ 32 subject, gồm 2.729 ADL và 2.346 Fall. Cả 2.346 nhãn Fall khớp được với hai mốc frame. Trung vị bước lấy mẫu là 10 ms.
 - Audit có 0 lỗi và 2 cảnh báo `trial_id_above_six`. Hai trial là `S11T27R07` và `S14T22R07`, đều có workbook và frame hợp lệ. Giữ cả hai trong dữ liệu.
