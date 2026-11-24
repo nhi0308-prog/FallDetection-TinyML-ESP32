@@ -1,0 +1,21 @@
+{
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "executable": "D:\\FALL_DETECTION\\KFall_Phase1_VSCode\\.venv\\Scripts\\python.exe",
+  "packages": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.17.0",
+    "sklearn": "1.8.0",
+    "matplotlib": "3.10.8",
+    "openpyxl": "3.1.5",
+    "yaml": "6.0.3",
+    "tensorflow": "2.20.0"
+  },
+  "tensorflow_cpu_forward_pass": "PASS",
+  "conv1d_output_shape": [
+    1,
+    98,
+    1
+  ]
+}
