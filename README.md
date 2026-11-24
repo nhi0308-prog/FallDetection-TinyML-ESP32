@@ -10,7 +10,7 @@ Repo gốc ở commit `8a96bc6` đã có hai notebook và bản xuất INT8 nh�
 
 | Đường dẫn | Chức năng |
 |---|---|
-| `requirements-phase1.txt` | Phiên bản thư viện cho Python 3.12 x64 |
+| `requirements.txt` | Phiên bản thư viện cho Python 3.12 x64 |
 | `scripts/check_environment.py` | Import các thư viện, chạy một lượt Conv1D trên CPU và ghi phiên bản đã cài |
 | `scripts/check_kfall.py` | Kiểm tra từng CSV, workbook, mã trial, chất lượng mẫu và liên kết nhãn té ngã |
 | `data/raw/kfall/` | Nơi đặt hai ZIP gốc do bạn đã tải |
