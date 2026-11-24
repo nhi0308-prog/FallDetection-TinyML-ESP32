@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "844364660384",
+    "firebase_url": "https://kfall-39eab-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "kfall-39eab",
+    "storage_bucket": "kfall-39eab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844364660384:android:42f30ced0c4bee617e53c5",
+        "android_client_info": {
+          "package_name": "com.example.fall_detection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJV0aChrPnXeMFraTrgtBKL_MFhT0WyBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
